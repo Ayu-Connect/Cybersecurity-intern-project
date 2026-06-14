@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishShield // AI Phishing Email Detection Model</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-fontawesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Phish<span>Shield</span></h1>
+                    <span class="logo-sub">AI Email Security</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" id="btn-dashboard" onclick="switchTab('dashboard')">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Model Dashboard</span>
+                </button>
+                <button class="nav-item" id="btn-scanner" onclick="switchTab('scanner')">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                    <span>Email Scanner</span>
+                </button>
+                <button class="nav-item" id="btn-retrain" onclick="switchTab('retrain')">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Retrain Model</span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="model-status-indicator">
+                    <div class="pulse-dot"></div>
+                    <div>
+                        <div class="status-title">Model Status</div>
+                        <div class="status-desc">Scikit-Learn (Active)</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-title">
+                    <h2 id="view-title">Model Performance Dashboard</h2>
+                    <p id="view-subtitle">Monitor real-time training metrics, feature weights, and classifications.</p>
+                </div>
+                <div class="header-actions">
+                    <div class="connection-badge" id="conn-badge">
+                        <span class="indicator-dot online"></span>
+                        <span id="conn-text">Connected to API</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <section id="view-dashboard" class="content-view active">
+                <!-- KPI metrics cards grid -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Model Accuracy</span>
+                            <div class="metric-icon accuracy-icon">
+                                <i class="fa-solid fa-crosshairs"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="kpi-accuracy">--%</div>
+                        <div class="metric-progress-bar">
+                            <div class="progress-fill fill-acc" id="kpi-accuracy-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="metric-subtext">Accuracy on test split</span>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">F1-Score</span>
+                            <div class="metric-icon f1-icon">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="kpi-f1">--%</div>
+                        <div class="metric-progress-bar">
+                            <div class="progress-fill fill-f1" id="kpi-f1-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="metric-subtext">Harmonic mean of precision/recall</span>
+                    </div>
+                    
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">Total Emails</span>
+                            <div class="metric-icon dataset-icon">
+                                <i class="fa-solid fa-database"></i>
+                            </div>
+                        </div>
+                        <div class="metric-value" id="kpi-total-emails">--</div>
+                        <div class="metric-distribution">
+                            <span class="dist-pill safe" id="kpi-safe-count">-- Safe</span>
+                            <span class="dist-pill phishing" id="kpi-phishing-count">-- Phish</span>
+                        </div>
+                        <span class="metric-subtext">Dataset sample distribution</span>
+                    </div>
+                </div>
+
+                <!-- Detailed performance grid -->
+                <div class="details-grid">
+                    <!-- Confusion Matrix Card -->
+                    <div class="glass-card matrix-card">
+                        <div class="card-header">
+                            <h3>Confusion Matrix</h3>
+                            <span class="card-badge">Test Set Evaluation</span>
+                        </div>
+                        <p class="card-description">Displays the classifier's performance mapping predicted labels against true labels.</p>
+                        
+                        <div class="matrix-container">
+                            <div class="matrix-axis-y-label">ACTUAL CLASS</div>
+                            <div class="matrix-wrapper">
+                                <div class="matrix-header-x">
+                                    <div class="matrix-axis-x-label">PREDICTED CLASS</div>
+                                    <div class="matrix-cols">
+                                        <div class="matrix-col-header">Predicted Safe (0)</div>
+                                        <div class="matrix-col-header">Predicted Phish (1)</div>
+                                    </div>
+                                </div>
+                                <div class="matrix-row-container">
+                                    <div class="matrix-row">
+                                        <div class="matrix-row-header">Actual Safe (0)</div>
+                                        <div class="matrix-cells">
+                                            <div class="matrix-cell tn" id="cell-tn">
+                                                <span class="cell-label">True Negative (TN)</span>
+                                                <span class="cell-number" id="val-tn">--</span>
+                                                <span class="cell-percent" id="pct-tn">--%</span>
+                                            </div>
+                                            <div class="matrix-cell fp" id="cell-fp">
+                                                <span class="cell-label">False Positive (FP)</span>
+                                                <span class="cell-number" id="val-fp">--</span>
+                                                <span class="cell-percent" id="pct-fp">--%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <div class="matrix-row-header">Actual Phish (1)</div>
+                                        <div class="matrix-cells">
+                                            <div class="matrix-cell fn" id="cell-fn">
+                                                <span class="cell-label">False Negative (FN)</span>
+                                                <span class="cell-number" id="val-fn">--</span>
+                                                <span class="cell-percent" id="pct-fn">--%</span>
+                                            </div>
+                                            <div class="matrix-cell tp" id="cell-tp">
+                                                <span class="cell-label">True Positive (TP)</span>
+                                                <span class="cell-number" id="val-tp">--</span>
+                                                <span class="cell-percent" id="pct-tp">--%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Model Coefficients (Top Indicators) Card -->
+                    <div class="glass-card weights-card">
+                        <div class="card-header">
+                            <h3>Model Coefficients</h3>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" id="toggle-phishing-weights" onclick="toggleWeights('phishing')">Phishing Keywords</button>
+                                <button class="toggle-btn" id="toggle-safe-weights" onclick="toggleWeights('safe')">Safe Keywords</button>
+                            </div>
+                        </div>
+                        <p class="card-description">Logistic Regression feature weights indicating strong correlation categories.</p>
+                        
+                        <div class="weights-list-container">
+                            <div class="weights-list active" id="weights-phishing-list">
+                                <!-- Phishing indicator bars go here -->
+                                <div class="loading-spinner-small"></div>
+                            </div>
+                            <div class="weights-list" id="weights-safe-list">
+                                <!-- Safe indicator bars go here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scanner View -->
+            <section id="view-scanner" class="content-view">
+                <div class="scanner-layout">
+                    <!-- Email Form Column -->
+                    <div class="glass-card scanner-form-card">
+                        <div class="card-header">
+                            <h3>Scan Email Form</h3>
+                            <span class="card-badge">Real-time Inference</span>
+                        </div>
+                        <p class="card-description">Input custom details or click a preset template below to instantly run the Scikit-learn detection model.</p>
+                        
+                        <!-- Presets selector -->
+                        <div class="preset-section">
+                            <span class="preset-label">Templates:</span>
+                            <div class="preset-buttons">
+                                <button class="preset-btn p-phish" onclick="loadTemplate('phish_paypal')">PayPal Urgency</button>
+                                <button class="preset-btn p-phish" onclick="loadTemplate('phish_netflix')">Netflix Billing</button>
+                                <button class="preset-btn p-phish" onclick="loadTemplate('phish_delivery')">Post Office Alert</button>
+                                <button class="preset-btn p-safe" onclick="loadTemplate('safe_meeting')">Work Meeting</button>
+                                <button class="preset-btn p-safe" onclick="loadTemplate('safe_news')">Tech Newsletter</button>
+                            </div>
+                        </div>
+
+                        <form id="email-scan-form" onsubmit="runInference(event)">
+                            <div class="form-group">
+                                <label for="scan-sender">Sender Address</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user-tag input-icon"></i>
+                                    <input type="text" id="scan-sender" placeholder="e.g. billing@paypal-verify.net" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="scan-subject">Subject Line</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-heading input-icon"></i>
+                                    <input type="text" id="scan-subject" placeholder="e.g. Account restriction alert" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="scan-body">Email Body Content</label>
+                                <textarea id="scan-body" rows="9" placeholder="Paste full email copy here..." required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn" id="btn-submit-scan">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Analyze Email Risk</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Scanning Results Column -->
+                    <div class="glass-card scanner-results-card">
+                        <div class="card-header">
+                            <h3>Inference Results</h3>
+                            <span class="card-badge" id="classification-badge">No Email Scanned</span>
+                        </div>
+                        
+                        <div class="results-default-placeholder" id="results-placeholder">
+                            <div class="placeholder-icon">
+                                <i class="fa-solid fa-envelope-open-text"></i>
+                            </div>
+                            <h4>Awaiting Analysis</h4>
+                            <p>Fill out the email scan form and click "Analyze Email Risk" to trigger features extraction, token vectorization, and Scikit-learn classification.</p>
+                        </div>
+                        
+                        <div class="results-active-container" id="results-active" style="display: none;">
+                            <!-- Top Alert Panel -->
+                            <div class="result-banner" id="res-banner">
+                                <div class="res-banner-icon" id="res-banner-icon">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </div>
+                                <div>
+                                    <div class="res-verdict" id="res-verdict">PHISHING DETECTED</div>
+                                    <div class="res-sub-verdict" id="res-sub-verdict">Extreme risk flagged by ML classifier.</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Gauge and details summary -->
+                            <div class="result-summary-row">
+                                <!-- Circular Gauge -->
+                                <div class="gauge-card">
+                                    <div class="gauge-wrapper">
+                                        <svg class="progress-ring" width="120" height="120">
+                                            <circle class="progress-ring-bg" stroke="#1e293b" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                                            <circle class="progress-ring-bar" id="res-gauge-circle" stroke="#f43f5e" stroke-width="8" stroke-dasharray="314.16" stroke-dashoffset="314.16" fill="transparent" r="50" cx="60" cy="60"/>
+                                        </svg>
+                                        <div class="gauge-inner">
+                                            <span class="gauge-value" id="res-probability">98%</span>
+                                            <span class="gauge-label" id="res-probability-label">Threat Prob</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Highlights and metrics info -->
+                                <div class="reasons-summary">
+                                    <h5>Key Findings</h5>
+                                    <ul class="findings-list" id="res-findings-list">
+                                        <!-- Dynamic findings bullets go here -->
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Highlights preview section -->
+                            <div class="email-preview-container">
+                                <div class="preview-header">
+                                    <span>Analyzed Content Highlight Preview</span>
+                                </div>
+                                <div class="preview-meta">
+                                    <div><strong>From:</strong> <span id="preview-sender">--</span></div>
+                                    <div><strong>Subject:</strong> <span id="preview-subject">--</span></div>
+                                </div>
+                                <div class="preview-body" id="preview-body-content">
+                                    <!-- Body text highlighting matches -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Retrain Portal View -->
+            <section id="view-retrain" class="content-view">
+                <div class="retrain-layout">
+                    <!-- Retrain Form -->
+                    <div class="glass-card retrain-form-card">
+                        <div class="card-header">
+                            <h3>Add Custom Data Point</h3>
+                            <span class="card-badge">Expand Dataset</span>
+                        </div>
+                        <p class="card-description">Inject your own custom emails to train the model. The model will automatically trigger a full pipeline execution and update coefficients.</p>
+                        
+                        <form id="retrain-form" onsubmit="submitRetrain(event)">
+                            <div class="form-row-2">
+                                <div class="form-group">
+                                    <label for="retrain-sender">Sender Email Address</label>
+                                    <input type="text" id="retrain-sender" placeholder="e.g. custom@brand-alert.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="retrain-label">Ground Truth Label</label>
+                                    <select id="retrain-label" required>
+                                        <option value="1" selected>Phishing Email (Label: 1)</option>
+                                        <option value="0">Safe/Legitimate Email (Label: 0)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="retrain-subject">Email Subject Line</label>
+                                <input type="text" id="retrain-subject" placeholder="e.g. Account suspended immediately" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="retrain-body">Email Body Content</label>
+                                <textarea id="retrain-body" rows="6" placeholder="Paste training email content here..." required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn orange-btn" id="btn-submit-retrain">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span>Submit & Retrain Model</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Custom Database Log -->
+                    <div class="glass-card log-card">
+                        <div class="card-header">
+                            <h3>Custom Submissions Log</h3>
+                            <span class="card-badge" id="custom-entries-count">0 Custom Entries</span>
+                        </div>
+                        <p class="card-description">A log of custom emails loaded into the database dynamically. These persist and are trained on retrials.</p>
+                        
+                        <div class="custom-entries-table-wrapper">
+                            <table class="custom-entries-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sender</th>
+                                        <th>Subject</th>
+                                        <th>Label</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="custom-entries-tbody">
+                                    <tr>
+                                        <td colspan="3" class="table-placeholder">No custom emails added yet. Use the form on the left to inject training data.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Retrain Processing Backdrop -->
+    <div class="backdrop" id="loading-backdrop">
+        <div class="loader-card">
+            <div class="loader-spinner"></div>
+            <h3>Retraining Model Pipeline</h3>
+            <p>Fitting TfidfVectorizer, scaling numerical metrics, and computing logistic regression coefficients on the server...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript logic -->
+    <script src="app.js"></script>
+</body>
+</html>

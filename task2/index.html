@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS // Vulnerability Scanner & Security Auditor</title>
+    <meta name="description" content="AEGIS is a high-fidelity web-based vulnerability scanner and security auditor, featuring simulated network audits, live client audits, and remediation guides.">
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="brand-section">
+                <div class="brand-logo">
+                    <i data-lucide="shield-alert" style="width: 32px; height: 32px;"></i>
+                </div>
+                <div class="brand-title">
+                    <h1 id="main-title">AEGIS // Security Scanner</h1>
+                    <p id="sub-title">Penetration Testing & Security Audit Engine</p>
+                </div>
+            </div>
+            <div class="system-status">
+                <div class="status-dot pulsing" id="status-dot"></div>
+                <span id="status-text">SYSTEM READY</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard-grid">
+            <!-- Left Column: Controls & Console -->
+            <section class="cyber-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i data-lucide="terminal" style="width: 20px; height: 20px;"></i>
+                        Scan Controller
+                    </h2>
+                </div>
+                
+                <div class="control-panel">
+                    <div class="form-group">
+                        <label for="target-input">Target Host / IP Address</label>
+                        <div class="input-container">
+                            <i data-lucide="globe" class="input-icon" style="width: 16px; height: 16px;"></i>
+                            <input type="text" id="target-input" class="cyber-input" value="127.0.0.1" placeholder="e.g. 192.168.1.1 or example.com">
+                        </div>
+                        <div class="preset-targets">
+                            <button type="button" class="preset-btn active" data-target="127.0.0.1" data-preset="local">Local Origin (Actual)</button>
+                            <button type="button" class="preset-btn" data-target="vulnerable-vault.local" data-preset="vuln">Vulnerable Sandbox</button>
+                            <button type="button" class="preset-btn" data-target="secure-shield.local" data-preset="secure">Secure Sandbox</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scan-type">Auditing Profile</label>
+                        <select id="scan-type" class="cyber-select">
+                            <option value="quick">Quick Config Audit (Fast)</option>
+                            <option value="ports">TCP Port Scan (Simulated)</option>
+                            <option value="web">Web Header & Software Audit (Simulated)</option>
+                            <option value="full">Full Penetration Scan (Simulated)</option>
+                        </select>
+                    </div>
+
+                    <button type="button" id="btn-launch-scan" class="btn-launch">
+                        <i data-lucide="play" style="width: 18px; height: 18px;"></i>
+                        Initialize Scan
+                    </button>
+                </div>
+
+                <!-- Radar Scan Animation -->
+                <div class="radar-panel">
+                    <div class="radar-container" id="radar-container">
+                        <div class="radar-sweep"></div>
+                        <div class="radar-ring radar-ring-1"></div>
+                        <div class="radar-ring radar-ring-2"></div>
+                        <div class="radar-logo" id="radar-logo">
+                            <i data-lucide="shield" style="width: 32px; height: 32px;"></i>
+                            <span class="radar-percentage" id="radar-percent">READY</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Terminal Console -->
+                <div class="console-panel">
+                    <div class="console-header">
+                        <div class="console-dots">
+                            <div class="console-dot"></div>
+                            <div class="console-dot"></div>
+                            <div class="console-dot"></div>
+                        </div>
+                        <div class="console-title">audit_stream.log</div>
+                    </div>
+                    <div class="console-body" id="console-output">
+                        <div class="console-line normal">
+                            <span class="timestamp">[22:51:22]</span>
+                            <span class="prompt">aegis_cli$</span>
+                            <span class="text">System initialized. Awaiting target parameters.</span>
+                        </div>
+                        <div class="console-line info">
+                            <span class="timestamp">[22:51:22]</span>
+                            <span class="prompt">aegis_cli$</span>
+                            <span class="text">Tip: Select 'Local Origin' to analyze this browser's origin security, or choose a simulated sandbox.</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Findings and Vulnerability Report -->
+            <section class="findings-container">
+                <div class="metrics-row">
+                    <!-- Security Score Card -->
+                    <div class="cyber-card scorecard-card">
+                        <h3 class="score-label">Origin Score</h3>
+                        <div class="score-circle" id="score-circle">
+                            <span class="score-value" id="score-val">100</span>
+                        </div>
+                        <span id="score-desc" style="font-size: 0.8rem; font-weight: 600; color: var(--color-emerald);">EXCELLENT</span>
+                    </div>
+
+                    <!-- Vulnerability Counts Card -->
+                    <div class="cyber-card summary-card">
+                        <h3 class="score-label" style="text-align: left; margin-bottom: 0.5rem;">Audit Findings Summary</h3>
+                        <div class="summary-grids">
+                            <div class="summary-badge critical">
+                                <span class="badge-count" id="count-critical">0</span>
+                                <span class="badge-label">Critical</span>
+                            </div>
+                            <div class="summary-badge high">
+                                <span class="badge-count" id="count-high">0</span>
+                                <span class="badge-label">High</span>
+                            </div>
+                            <div class="summary-badge medium">
+                                <span class="badge-count" id="count-medium">0</span>
+                                <span class="badge-label">Medium</span>
+                            </div>
+                            <div class="summary-badge info">
+                                <span class="badge-count" id="count-info">0</span>
+                                <span class="badge-label">Info</span>
+                            </div>
+                            <div class="summary-badge passed">
+                                <span class="badge-count" id="count-passed">0</span>
+                                <span class="badge-label">Passed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Audit Findings Panel -->
+                <div class="cyber-card" style="flex-grow: 1;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i data-lucide="activity" style="width: 20px; height: 20px;"></i>
+                            Remediation Report
+                        </h2>
+                        <div class="results-header-actions" id="report-actions" style="display: none;">
+                            <button type="button" class="action-btn" id="btn-download-json">
+                                <i data-lucide="download" style="width: 14px; height: 14px;"></i> Export JSON
+                            </button>
+                            <button type="button" class="action-btn" id="btn-download-html">
+                                <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Export HTML
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vulnerability List Wrapper -->
+                    <div class="vulnerability-list" id="vuln-list">
+                        <div class="results-placeholder" id="results-placeholder">
+                            <i data-lucide="scan-face" style="width: 48px; height: 48px;"></i>
+                            <p>No vulnerability report compiled yet.<br>Provide a target and click "Initialize Scan" to execute analysis.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Informational & Learning Tabs -->
+        <section class="cyber-card">
+            <div class="tab-container">
+                <nav class="tab-nav">
+                    <button type="button" class="tab-btn active" data-tab="learning-tab">OWASP Security Matrix</button>
+                    <button type="button" class="tab-btn" data-tab="playground-tab">Remediation Code Playground</button>
+                    <button type="button" class="tab-btn" data-tab="cli-tab">Companion CLI Utility</button>
+                </nav>
+
+                <!-- Tab 1: OWASP Security Matrix -->
+                <div class="tab-content active" id="learning-tab">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                        <div class="cyber-card" style="padding: 1rem; border-color: rgba(99, 102, 241, 0.2); background: rgba(10, 15, 30, 0.4);">
+                            <h4 style="color: var(--color-rose); font-family: var(--font-heading); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                                <i data-lucide="database" style="width: 16px; height: 16px;"></i> A01:2021-Broken Access Control
+                            </h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+                                Occurs when users can access resources or execute actions outside their intended permissions. Remediation involves implementing strict server-side access control checks, employing default-deny policies, and auditing API endpoints.
+                            </p>
+                        </div>
+
+                        <div class="cyber-card" style="padding: 1rem; border-color: rgba(99, 102, 241, 0.2); background: rgba(10, 15, 30, 0.4);">
+                            <h4 style="color: var(--color-rose); font-family: var(--font-heading); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                                <i data-lucide="lock" style="width: 16px; height: 16px;"></i> A02:2021-Cryptographic Failures
+                            </h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+                                Formerly known as Sensitive Data Exposure. Focuses on failures related to cryptography, which often leads to exposed sensitive data. Mitigation includes encrypting all data in transit (TLS) and at rest (AES-256), and using strong hashing algorithms (bcrypt/Argon2).
+                            </p>
+                        </div>
+
+                        <div class="cyber-card" style="padding: 1rem; border-color: rgba(99, 102, 241, 0.2); background: rgba(10, 15, 30, 0.4);">
+                            <h4 style="color: var(--color-rose); font-family: var(--font-heading); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                                <i data-lucide="code-2" style="width: 16px; height: 16px;"></i> A03:2021-Injection
+                            </h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+                                SQL Injection, OS Command Injection, and LDAP Injection. Occur when untrusted user input is executed directly by an interpreter. Remediate by using parameterized queries (Prepared Statements), input validation, and proper escaping APIs.
+                            </p>
+                        </div>
+
+                        <div class="cyber-card" style="padding: 1rem; border-color: rgba(99, 102, 241, 0.2); background: rgba(10, 15, 30, 0.4);">
+                            <h4 style="color: var(--color-rose); font-family: var(--font-heading); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                                <i data-lucide="settings" style="width: 16px; height: 16px;"></i> A05:2021-Security Misconfiguration
+                            </h4>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">
+                                Missing security headers, open ports, default accounts/passwords, or verbose error messages. Mitigated by automated hardening processes, removing unused services, disabling index listings, and configuring secure HTTP response headers.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Code Playground -->
+                <div class="tab-content" id="playground-tab">
+                    <div class="playground-selector">
+                        <button type="button" class="pg-select-btn active" data-vulnerability="headers">Security Response Headers</button>
+                        <button type="button" class="pg-select-btn" data-vulnerability="sqli">SQL Injection Protection</button>
+                        <button type="button" class="pg-select-btn" data-vulnerability="xss">Cross-Site Scripting (XSS)</button>
+                    </div>
+
+                    <div class="playground-grid">
+                        <div class="playground-column">
+                            <div class="playground-col-header">
+                                <span>Vulnerable Configuration</span>
+                                <span class="playground-badge vulnerable">Weak</span>
+                            </div>
+                            <div class="playground-code vulnerable">
+                                <pre><code id="code-vulnerable">// Node.js Express Server
+app.get('/api', (req, res) => {
+    // Missing security headers allows clickjacking, XSS, MIME sniffing
+    res.setHeader('X-Powered-By', 'Express');
+    res.send({ status: 'active' });
+});</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="playground-column">
+                            <div class="playground-col-header">
+                                <span>Remediated Configuration</span>
+                                <span class="playground-badge secure">Secure</span>
+                            </div>
+                            <div class="playground-code secure">
+                                <pre><code id="code-remediated">// Node.js Express Server (Secured)
+const helmet = require('helmet');
+// Helmet secures HTTP headers automatically
+app.use(helmet());
+app.disable('x-powered-by');
+
+app.get('/api', (req, res) => {
+    res.send({ status: 'active' });
+});</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Python Companion Guide -->
+                <div class="tab-content" id="cli-tab">
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">
+                            Since browser scripts cannot perform actual TCP socket connections to arbitrary external domains, we have generated a robust companion python script <strong>`scanner.py`</strong> in your project directory. This script performs direct TCP port scans, inspects web service headers, and outputs vulnerability assessments.
+                        </p>
+                        
+                        <div class="cli-box">
+                            <div class="cli-line comment"># Step 1: Navigate to the project directory and execute the scanner script</div>
+                            <div class="cli-line command">
+                                <span>python scanner.py localhost --ports 22,80,443,8080 --output report.html</span>
+                                <button type="button" class="copy-btn" id="btn-copy-cli" data-tooltip="Copy Command">
+                                    <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+                                </button>
+                            </div>
+                            <div class="cli-line comment"># Step 2: The script scans for open ports, fetches banners, audits HTTP security,</div>
+                            <div class="cli-line comment"># and generates a detailed report.html and report.json on disk.</div>
+                        </div>
+
+                        <h4 style="font-family: var(--font-heading); color: var(--text-primary); margin-top: 0.5rem;">Available CLI Arguments:</h4>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 0.5rem; text-align: left;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-primary);">
+                                    <th style="padding: 0.5rem;">Argument</th>
+                                    <th style="padding: 0.5rem;">Usage</th>
+                                    <th style="padding: 0.5rem;">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody style="color: var(--text-secondary);">
+                                <tr style="border-bottom: 1px solid rgba(30, 41, 59, 0.4);">
+                                    <td style="padding: 0.5rem; font-family: var(--font-mono); color: var(--color-cyan);">target</td>
+                                    <td style="padding: 0.5rem;">Positional</td>
+                                    <td style="padding: 0.5rem;">Host name or IP address to target (e.g. 127.0.0.1, google.com).</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(30, 41, 59, 0.4);">
+                                    <td style="padding: 0.5rem; font-family: var(--font-mono); color: var(--color-cyan);">--ports, -p</td>
+                                    <td style="padding: 0.5rem;">Optional</td>
+                                    <td style="padding: 0.5rem;">Comma-separated list of ports to scan. Default is common ports.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(30, 41, 59, 0.4);">
+                                    <td style="padding: 0.5rem; font-family: var(--font-mono); color: var(--color-cyan);">--output, -o</td>
+                                    <td style="padding: 0.5rem;">Optional</td>
+                                    <td style="padding: 0.5rem;">Custom filepath to export the HTML report.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem; font-family: var(--font-mono); color: var(--color-cyan);">--timeout, -t</td>
+                                    <td style="padding: 0.5rem;">Optional</td>
+                                    <td style="padding: 0.5rem;">Connection timeout in seconds. Default is 1.0s.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <span>AEGIS // Security Scanner v1.0.0</span>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Documentation</a>
+                <span style="color: var(--border-color);">|</span>
+                <span class="footer-link" style="cursor: help;" data-tooltip="Disclaimer: Authorized testing only. Use responsibly.">Legal Disclaimer</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Script Entrypoint -->
+    <script src="app.js"></script>
+</body>
+</html>

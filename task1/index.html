@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Fortress: A modern, client-side Password Strength Analyzer, Smart Generator, and Cryptographic Vault Simulator to check strength, prevent reuse, and secure credentials.">
+  <title>Fortress | Password Security Suite</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navigation Hub -->
+  <header class="app-header">
+    <div class="logo-area">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <circle cx="12" cy="11" r="3" />
+        <path d="M12 14v4" />
+      </svg>
+      <h1>Fortress</h1>
+      <span class="badge">v1.0</span>
+    </div>
+    
+    <nav class="nav-tabs" role="tablist">
+      <button class="tab-btn active" id="tab-analyzer" role="tab" aria-selected="true" aria-controls="panel-analyzer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Analyzer
+      </button>
+      <button class="tab-btn" id="tab-generator" role="tab" aria-selected="false" aria-controls="panel-generator">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+          <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+        Smart Generator
+      </button>
+      <button class="tab-btn" id="tab-vault" role="tab" aria-selected="false" aria-controls="panel-vault">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Security Vault
+      </button>
+    </nav>
+
+    <div class="header-actions">
+      <button id="theme-toggle" aria-label="Toggle dark/light theme" class="icon-btn">
+        <!-- Sun icon -->
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <!-- Moon icon -->
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Dashboard -->
+  <main class="app-main">
+    
+    <!-- PANEL 1: ANALYZER -->
+    <section id="panel-analyzer" class="tab-panel active" role="tabpanel" aria-labelledby="tab-analyzer">
+      <div class="grid-2-col">
+        
+        <!-- Left Side: Password Entry & Visualizer -->
+        <div class="glass-card main-analyzer-card">
+          <h2>Password Strength Analyzer</h2>
+          <p class="section-desc">Enter a password to run structural, entropy, and complexity checks in real-time.</p>
+          
+          <div class="input-container">
+            <label for="password-input">Enter Password</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="password-input" placeholder="Type a password..." autocomplete="off" autofocus>
+              <button id="toggle-pw-visibility" class="icon-btn" aria-label="Toggle Password Visibility">
+                <!-- Eye icon (show) -->
+                <svg class="eye-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                <!-- Eye off icon (hide) -->
+                <svg class="eye-closed-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Strength Meter -->
+          <div class="strength-meter-section">
+            <div class="strength-meta">
+              <span class="strength-label">Strength: <strong id="strength-value" class="strength-text-weak">Empty</strong></span>
+              <span class="entropy-label">Entropy: <span id="entropy-value" class="mono-font">0.00 bits</span></span>
+            </div>
+            
+            <div class="progress-bar-container">
+              <div id="strength-progress" class="progress-bar-fill"></div>
+            </div>
+            
+            <div class="strength-verdict" id="strength-verdict-desc">
+              Type something to begin calculating password strength and security score.
+            </div>
+          </div>
+
+          <!-- SHA-256 Hashing Real-time Visualizer -->
+          <div class="crypto-preview-box">
+            <div class="crypto-header">
+              <span>SHA-256 Cryptographic Hash</span>
+              <span class="badge badge-purple">SHA-256</span>
+            </div>
+            <div id="hash-output" class="mono-font word-break select-all">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+            <p class="crypto-note">This SHA-256 signature changes completely even with a single character difference. Websites store this hash instead of your actual password!</p>
+          </div>
+        </div>
+
+        <!-- Right Side: Structural Evaluation Checklist & Crack Estimator -->
+        <div class="flex-column gap-lg">
+          <!-- Crack Time Estimations -->
+          <div class="glass-card card-crack-time">
+            <h3>Time to Crack Estimation</h3>
+            <p class="card-desc">Estimated search time for a brute force attack using different hardware configurations.</p>
+            
+            <div class="crack-time-grid">
+              <div class="crack-time-item">
+                <div class="hardware-info">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hardware-icon">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                    <line x1="8" y1="21" x2="16" y2="21"/>
+                    <line x1="12" y1="17" x2="12" y2="21"/>
+                  </svg>
+                  <div>
+                    <span class="hardware-name">Consumer Desktop PC</span>
+                    <span class="hardware-spec">10 billion guesses/sec</span>
+                  </div>
+                </div>
+                <div class="time-estimate mono-font" id="crack-desktop">Instantly</div>
+              </div>
+
+              <div class="crack-time-item">
+                <div class="hardware-info">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hardware-icon">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                    <line x1="6" y1="6" x2="6.01" y2="6"/>
+                    <line x1="6" y1="18" x2="6.01" y2="18"/>
+                  </svg>
+                  <div>
+                    <span class="hardware-name">Custom GPU Rig</span>
+                    <span class="hardware-spec">10 trillion guesses/sec</span>
+                  </div>
+                </div>
+                <div class="time-estimate mono-font" id="crack-gpu">Instantly</div>
+              </div>
+
+              <div class="crack-time-item">
+                <div class="hardware-info">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hardware-icon">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M21 16H3M21 12H3M21 8H3M10 3v18"/>
+                  </svg>
+                  <div>
+                    <span class="hardware-name">Supercomputer / Botnet</span>
+                    <span class="hardware-spec">100 quadrillion guesses/sec</span>
+                  </div>
+                </div>
+                <div class="time-estimate mono-font" id="crack-super">Instantly</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Password Checklist -->
+          <div class="glass-card card-checklist">
+            <h3>Structural Requirements</h3>
+            <ul class="checklist" id="rules-checklist">
+              <li data-rule="length">
+                <span class="status-indicator"></span>
+                <span>Minimum 12 characters long (Recommended)</span>
+              </li>
+              <li data-rule="uppercase">
+                <span class="status-indicator"></span>
+                <span>Contains uppercase letter (A-Z)</span>
+              </li>
+              <li data-rule="lowercase">
+                <span class="status-indicator"></span>
+                <span>Contains lowercase letter (a-z)</span>
+              </li>
+              <li data-rule="number">
+                <span class="status-indicator"></span>
+                <span>Contains numeric digit (0-9)</span>
+              </li>
+              <li data-rule="symbol">
+                <span class="status-indicator"></span>
+                <span>Contains special symbol (e.g., @, #, $, %, !)</span>
+              </li>
+              <li data-rule="pattern">
+                <span class="status-indicator"></span>
+                <span>No sequential patterns, repeated characters, or keyboard paths</span>
+              </li>
+              <li data-rule="common">
+                <span class="status-indicator"></span>
+                <span>Not in list of standard/common leaked passwords</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PANEL 2: SMART GENERATOR -->
+    <section id="panel-generator" class="tab-panel" role="tabpanel" aria-labelledby="tab-generator" style="display: none;">
+      <div class="max-width-md glass-card generator-card">
+        <h2>Smart Password Generator</h2>
+        <p class="section-desc">Generate customized, cryptographically secure passwords that are virtually impossible to crack.</p>
+        
+        <!-- Generated Password Output Box -->
+        <div class="generator-output-container">
+          <div class="generator-output mono-font select-all" id="generated-password-box">Select options below...</div>
+          <div class="generator-actions">
+            <button id="regenerate-btn" class="icon-btn" aria-label="Regenerate Password" title="Regenerate Password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+            </button>
+            <button id="copy-btn" class="btn btn-primary" aria-label="Copy to Clipboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <!-- Generator Controls -->
+        <div class="generator-controls">
+          <!-- Length Slider -->
+          <div class="control-group">
+            <div class="control-header">
+              <label for="length-slider">Password Length: <span id="length-val-display" class="slider-display mono-font">16</span></label>
+            </div>
+            <div class="slider-wrapper">
+              <input type="range" id="length-slider" min="8" max="64" value="16">
+            </div>
+          </div>
+
+          <!-- Switches / Toggles Grid -->
+          <div class="toggles-grid">
+            <label class="switch-container">
+              <input type="checkbox" id="gen-uppercase" checked>
+              <span class="custom-switch"></span>
+              <span class="switch-label">Include Uppercase (A-Z)</span>
+            </label>
+            
+            <label class="switch-container">
+              <input type="checkbox" id="gen-lowercase" checked>
+              <span class="custom-switch"></span>
+              <span class="switch-label">Include Lowercase (a-z)</span>
+            </label>
+
+            <label class="switch-container">
+              <input type="checkbox" id="gen-numbers" checked>
+              <span class="custom-switch"></span>
+              <span class="switch-label">Include Numbers (0-9)</span>
+            </label>
+
+            <label class="switch-container">
+              <input type="checkbox" id="gen-symbols" checked>
+              <span class="custom-switch"></span>
+              <span class="switch-label">Include Special Symbols (@#$%)</span>
+            </label>
+
+            <label class="switch-container">
+              <input type="checkbox" id="gen-readable">
+              <span class="custom-switch"></span>
+              <span class="switch-label">Easy to Read (Avoid ambiguous chars: O, 0, l, 1, I)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Quick copy to Analyzer -->
+        <div class="generator-footer-action">
+          <button id="send-to-analyzer-btn" class="btn btn-secondary">
+            Send Generated Password to Analyzer
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-inline">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: VAULT & REUSE SIMULATOR -->
+    <section id="panel-vault" class="tab-panel" role="tabpanel" aria-labelledby="tab-vault" style="display: none;">
+      <div class="grid-2-col">
+        
+        <!-- Left Side: Register Form & Educational Box -->
+        <div class="glass-card">
+          <h2>Secure Vault & Reuse Prevention</h2>
+          <p class="section-desc">Simulate how applications securely store your credentials in their database. We check if your password hash matches existing accounts to prevent unsafe password reuse.</p>
+          
+          <form id="vault-register-form" class="vault-form">
+            <div class="form-group">
+              <label for="vault-username">Username or Email</label>
+              <input type="text" id="vault-username" placeholder="alex@example.com" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="vault-service">Service/Website Name</label>
+              <select id="vault-service" required>
+                <option value="Gmail">Gmail</option>
+                <option value="GitHub">GitHub</option>
+                <option value="Online Banking">Online Banking</option>
+                <option value="Netflix">Netflix</option>
+                <option value="Social Media">Social Media</option>
+                <option value="Custom Service">Custom / Other Website</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="custom-service-group" style="display: none;">
+              <label for="vault-custom-service">Specify Website Name</label>
+              <input type="text" id="vault-custom-service" placeholder="MyAwesomeApp">
+            </div>
+
+            <div class="form-group">
+              <label for="vault-password">Account Password</label>
+              <div class="password-input-wrapper">
+                <input type="password" id="vault-password" placeholder="Enter password to register..." autocomplete="off" required>
+                <button type="button" id="toggle-vault-pw-visibility" class="icon-btn" aria-label="Toggle Password Visibility">
+                  <svg class="eye-open-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="eye-closed-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Real-time SHA-256 indicator before saving -->
+            <div class="vault-hash-indicator" id="vault-hash-display">
+              <span class="indicator-title">Resulting SHA-256 Hash to be saved in Database:</span>
+              <code id="vault-hash-preview" class="word-break">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</code>
+            </div>
+
+            <!-- Danger Alert for HASH reuse detection -->
+            <div id="reuse-warning-alert" class="warning-alert-box" style="display: none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <div>
+                <strong>Security Risk Detected!</strong>
+                <p>A password with this identical SHA-256 hash is already registered in your vault. Reusing passwords across accounts means if one website is breached, all your accounts are compromised.</p>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="vault-submit-btn">
+              Register Credentials Securely
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Side: The Mock Database Viewer -->
+        <div class="glass-card">
+          <div class="db-header">
+            <div>
+              <h3>Simulated Credentials Database</h3>
+              <p class="card-desc">Your credentials are stored securely using modern one-way hash mapping. Notice that only hashes are stored, not plaintext passwords!</p>
+            </div>
+            <button id="clear-db-btn" class="btn btn-sm btn-danger">Reset Vault</button>
+          </div>
+
+          <div class="database-table-container">
+            <table class="db-table" id="vault-db-table">
+              <thead>
+                <tr>
+                  <th>Service</th>
+                  <th>Username</th>
+                  <th>Stored Password Hash (SHA-256)</th>
+                </tr>
+              </thead>
+              <tbody id="vault-db-body">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+            <div id="vault-empty-state" class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="empty-icon">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="16"/>
+                <line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+              <p>No passwords registered yet. Use the form on the left to add website credentials.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Footer Info -->
+  <footer class="app-footer">
+    <p>Fortress Password Suite &bull; Crafted with standard cryptography concepts &bull; All data stays local in your browser</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

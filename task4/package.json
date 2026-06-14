@@ -1,0 +1,19 @@
+{
+  "name": "secure-login-system",
+  "version": "1.0.0",
+  "description": "Secure login system with session management and 2FA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "qrcode": "^1.5.3",
+    "speakeasy": "^2.0.0",
+    "sqlite3": "^5.1.7"
+  }
+}

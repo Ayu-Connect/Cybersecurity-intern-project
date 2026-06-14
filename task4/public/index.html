@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Auth - Advanced Login System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Background Ambient Lights -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Notification Container for toasts -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main Container -->
+  <main class="app-container">
+    
+    <!-- 1. LOGIN CARD -->
+    <section id="login-section" class="card fade-in">
+      <div class="card-header">
+        <h1>Welcome Back</h1>
+        <p class="subtitle">Please sign in to access your secure portal</p>
+      </div>
+      <form id="login-form" novalidate>
+        <div class="input-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" required placeholder="name@example.com" autocomplete="email">
+          <span class="validation-msg" id="login-email-err"></span>
+        </div>
+        
+        <div class="input-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••" autocomplete="current-password">
+          <span class="validation-msg" id="login-password-err"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="login-submit-btn">
+          <span>Sign In</span>
+          <div class="spinner hidden"></div>
+        </button>
+      </form>
+      <div class="card-footer">
+        <p>Don't have an account? <a href="#" id="go-to-register">Register here</a></p>
+      </div>
+    </section>
+
+    <!-- 2. REGISTRATION CARD -->
+    <section id="register-section" class="card hidden">
+      <div class="card-header">
+        <h1>Create Account</h1>
+        <p class="subtitle">Join our platform with high-security protection</p>
+      </div>
+      <form id="register-form" novalidate>
+        <div class="input-group">
+          <label for="register-username">Username</label>
+          <input type="text" id="register-username" required placeholder="johndoe" autocomplete="username">
+          <span class="validation-msg" id="register-username-err"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="register-email">Email Address</label>
+          <input type="email" id="register-email" required placeholder="john@example.com" autocomplete="email">
+          <span class="validation-msg" id="register-email-err"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="register-password">Password</label>
+          <input type="password" id="register-password" required placeholder="••••••••" autocomplete="new-password">
+          <span class="password-strength-indicator">
+            <span class="strength-bar weak"></span>
+            <span class="strength-bar medium"></span>
+            <span class="strength-bar strong"></span>
+          </span>
+          <span class="validation-msg" id="register-password-err"></span>
+        </div>
+
+        <div class="input-group">
+          <label for="register-confirm-password">Confirm Password</label>
+          <input type="password" id="register-confirm-password" required placeholder="••••••••" autocomplete="new-password">
+          <span class="validation-msg" id="register-confirm-password-err"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="register-submit-btn">
+          <span>Create Account</span>
+          <div class="spinner hidden"></div>
+        </button>
+      </form>
+      <div class="card-footer">
+        <p>Already have an account? <a href="#" id="go-to-login">Log in here</a></p>
+      </div>
+    </section>
+
+    <!-- 3. TWO-FACTOR AUTHENTICATION LOGIN CODE CARD -->
+    <section id="2fa-prompt-section" class="card hidden">
+      <div class="card-header">
+        <div class="badge-icon">🔒</div>
+        <h1>Two-Factor Code</h1>
+        <p class="subtitle">Enter the 6-digit verification code from your authenticator app</p>
+      </div>
+      <form id="2fa-prompt-form" novalidate>
+        <div class="input-group center-input">
+          <input type="text" id="2fa-prompt-code" required placeholder="000 000" pattern="[0-9]*" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+          <span class="validation-msg" id="2fa-prompt-code-err"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="2fa-prompt-submit-btn">
+          <span>Verify & Continue</span>
+          <div class="spinner hidden"></div>
+        </button>
+      </form>
+      <div class="card-footer">
+        <p><a href="#" id="cancel-2fa-prompt">Cancel and return to sign in</a></p>
+      </div>
+    </section>
+
+    <!-- 4. DASHBOARD -->
+    <section id="dashboard-section" class="card dashboard-card hidden">
+      <div class="dashboard-header">
+        <div class="user-avatar" id="dashboard-avatar">U</div>
+        <div class="dashboard-title">
+          <h1 id="dashboard-welcome">Welcome, User!</h1>
+          <p id="dashboard-email" class="subtitle">user@example.com</p>
+        </div>
+        <button id="logout-btn" class="btn btn-secondary btn-small">Log Out</button>
+      </div>
+
+      <div class="dashboard-content">
+        <div class="dashboard-card-section">
+          <h3>Security Center</h3>
+          <p class="section-desc">Manage your security settings and session verification status.</p>
+
+          <div class="security-status-box" id="two-factor-status-box">
+            <div class="status-details">
+              <span class="status-title">Two-Factor Authentication (2FA)</span>
+              <span class="status-label tag tag-disabled" id="2fa-status-tag">Disabled</span>
+            </div>
+            <button id="toggle-2fa-btn" class="btn btn-primary btn-small">Enable 2FA</button>
+          </div>
+        </div>
+
+        <div class="dashboard-card-section">
+          <h3>Active Session Information</h3>
+          <table class="session-info-table">
+            <tr>
+              <td>Session State</td>
+              <td><span class="tag tag-success">Authenticated</span></td>
+            </tr>
+            <tr>
+              <td>Environment</td>
+              <td>Development Localhost</td>
+            </tr>
+            <tr>
+              <td>Protection Level</td>
+              <td id="protection-level-text">Standard (Password Only)</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 2FA SETUP MODAL/CARD -->
+    <section id="2fa-setup-section" class="card hidden">
+      <div class="card-header">
+        <h1>Set Up 2FA</h1>
+        <p class="subtitle">Scan the QR code to enable extra login security</p>
+      </div>
+      
+      <div class="setup-2fa-content">
+        <div class="qr-code-container">
+          <img id="2fa-qr-image" src="" alt="2FA QR Code">
+        </div>
+        
+        <div class="setup-instructions">
+          <ol>
+            <li>Scan the QR code with your authenticator app (e.g., Google Authenticator, Authy).</li>
+            <li>If you cannot scan, manually enter this key:
+              <div class="secret-key-display">
+                <code id="2fa-secret-text">SECRETKEYHERE</code>
+                <button id="copy-secret-btn" class="btn btn-secondary btn-mini">Copy</button>
+              </div>
+            </li>
+            <li>Enter the 6-digit code from your app to verify setup.</li>
+          </ol>
+        </div>
+
+        <form id="2fa-setup-form" novalidate>
+          <div class="input-group center-input">
+            <input type="text" id="2fa-setup-code" required placeholder="000 000" pattern="[0-9]*" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+            <span class="validation-msg" id="2fa-setup-code-err"></span>
+          </div>
+
+          <div class="setup-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-2fa-setup-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="confirm-2fa-setup-btn">
+              <span>Activate 2FA</span>
+              <div class="spinner hidden"></div>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 6. 2FA DISABLE SECURITY PROMPT -->
+    <section id="2fa-disable-section" class="card hidden">
+      <div class="card-header">
+        <h1>Disable 2FA</h1>
+        <p class="subtitle">Please confirm your password to disable Two-Factor Authentication</p>
+      </div>
+      <form id="2fa-disable-form" novalidate>
+        <div class="input-group">
+          <label for="disable-2fa-password">Account Password</label>
+          <input type="password" id="disable-2fa-password" required placeholder="••••••••" autocomplete="current-password">
+          <span class="validation-msg" id="disable-2fa-password-err"></span>
+        </div>
+
+        <div class="setup-actions">
+          <button type="button" class="btn btn-secondary" id="cancel-2fa-disable-btn">Cancel</button>
+          <button type="submit" class="btn btn-danger" id="confirm-2fa-disable-btn">
+            <span>Disable 2FA</span>
+            <div class="spinner hidden"></div>
+          </button>
+        </div>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="main-footer">
+    <p>Secure Login Portal &copy; 2026. Fully protected from common web vulnerabilities.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
